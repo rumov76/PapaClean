@@ -329,7 +329,7 @@ function addDays(isoDate, days) {
   const date = new Date(y, m - 1, d + days);
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate() + 0).toString().padStart(2, "0");
+  const day = String(date.getDate()).toString().padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 
@@ -366,6 +366,55 @@ function computeStatus(task, todayIso) {
     deadline,
     daysLate: diffDays
   };
+}
+
+// --- PERSISTENCE ---
+function loadTasks() {
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      return INITIAL_TASKS.map((t) => ({
+        ...t,
+        lastDone: CREATION_DATE
+      }));
+    }
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) {
+      throw new Error("Format invalide");
+    }
+
+    const baseById = new Map(INITIAL_TASKS.map((t) => [t.id, t]));
+
+    return parsed.map((stored) => {
+      const base = baseById.get(stored.id) || {};
+      return {
+        ...base,
+        ...stored
+      };
+    });
+  } catch (e) {
+    console.warn("PapaClean: impossible de charger les données, réinitialisation.", e);
+    return INITIAL_TASKS.map((t) => ({
+      ...t,
+      lastDone: CREATION_DATE
+    }));
+  }
+}
+
+function saveTasks() {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state.tasks));
+  } catch (e) {
+    console.warn("PapaClean: impossible d'enregistrer les données.", e);
+  }
+}
+
+function setView(view, options = {}) {
+  state.view = view;
+  if (options.selectedRoomCode !== undefined) {
+    state.selectedRoomCode = options.selectedRoomCode;
+  }
+  render();
 }
 
 function withStatus(tasks, todayIso) {
@@ -405,50 +454,6 @@ function getRoomStatus(roomCode) {
     return { label: "en retard", cssClass: "status-late" };
   }
   return { label: "dans les temps", cssClass: "status-on-time" };
-}
-
-function loadTasks() {
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      return INITIAL_TASKS.map((t) => ({
-        ...t,
-        lastDone: CREATION_DATE
-      }));
-    }
-    const parsed = JSON.parse(raw);
-    const mapById = new Map(parsed.map((t) => [t.id, t]));
-    return INITIAL_TASKS.map((base) => {
-      const stored = mapById.get(base.id);
-      return {
-        ...base,
-        lastDone: stored && stored.lastDone ? stored.lastDone : CREATION_DATE
-      };
-    });
-  } catch (e) {
-    console.warn("PapaClean: impossible de charger les données, réinitialisation.", e);
-    return INITIAL_TASKS.map((t) => ({
-      ...t,
-      lastDone: CREATION_DATE
-    }));
-  }
-}
-
-function saveTasks() {
-  try {
-    const toStore = state.tasks.map(({ id, lastDone }) => ({ id, lastDone }));
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(toStore));
-  } catch (e) {
-    console.warn("PapaClean: impossible d'enregistrer les données.", e);
-  }
-}
-
-function setView(view, options = {}) {
-  state.view = view;
-  if (options.selectedRoomCode !== undefined) {
-    state.selectedRoomCode = options.selectedRoomCode;
-  }
-  render();
 }
 
 function selectNextTask() {
@@ -739,14 +744,6 @@ function render() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  state.tasks = loadTasks();
-  setupModal();
-  render();
-});
-
-
-
 // Enregistrement du service worker pour PapaClean (PWA)
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
@@ -757,3 +754,9 @@ if ("serviceWorker" in navigator) {
       });
   });
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  state.tasks = loadTasks();
+  setupModal();
+  render();
+});
