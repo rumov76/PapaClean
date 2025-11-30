@@ -48,8 +48,9 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
-  border: 1px solid #a5d6a7;
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 40%, #a5d6a7 100%);
+  border: 1px solid #81c784;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
 .hero-header {
@@ -97,9 +98,14 @@ body {
 
 /* Top tabs */
 .tab-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   display: flex;
   gap: 8px;
   margin-bottom: 4px;
+  padding: 6px 0;
+  background: #f5f5f5;
 }
 
 .tab {
