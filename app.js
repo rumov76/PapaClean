@@ -715,15 +715,21 @@ function renderPlan(container) {
 
 function render() {
   const root = document.getElementById("app-root");
+  const tabRoot = document.getElementById("tab-bar-root");
   const isPlan = state.view === "plan";
 
+  // Rendu des onglets dans l'en-tête
+  if (tabRoot) {
+    tabRoot.innerHTML = `
+      <div class="tab-bar">
+        <button class="tab ${isPlan ? "active" : ""}" id="tab-plan">Plan appartement</button>
+        <button class="tab ${!isPlan ? "active" : ""}" id="tab-random">Tâche aléatoire</button>
+      </div>
+    `;
+  }
+
+  // Rendu du contenu principal
   root.innerHTML = `
-    <div class="tab-bar">
-      <button class="tab ${isPlan ? "active" : ""}" id="tab-plan">Plan appartement</button>
-      <button class="tab ${!isPlan ? "active" : ""}" id="tab-random">Tâche aléatoire</button>
-    </div>
-
-
     <section class="card hero-card">
       <div class="hero-header">
         <div class="hero-title-block">
@@ -762,6 +768,7 @@ function render() {
     });
   }
 }
+
 
 // Enregistrement du service worker pour PapaClean (PWA)
 if ("serviceWorker" in navigator) {
