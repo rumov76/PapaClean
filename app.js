@@ -737,6 +737,12 @@ function render() {
   const isPlan = state.view === "plan";
 
   root.innerHTML = `
+    <div class="tab-bar">
+      <button class="tab ${isPlan ? "active" : ""}" id="tab-plan">Plan appartement</button>
+      <button class="tab ${!isPlan ? "active" : ""}" id="tab-random">Tâche aléatoire</button>
+    </div>
+
+
     <section class="card hero-card">
       <div class="hero-header">
         <div class="hero-title-block">
@@ -749,11 +755,6 @@ function render() {
       </div>
 
     </section>
-
-    <div class="tab-bar">
-      <button class="tab ${isPlan ? "active" : ""}" id="tab-plan">Plan appartement</button>
-      <button class="tab ${!isPlan ? "active" : ""}" id="tab-random">Tâche aléatoire</button>
-    </div>
 
     <div id="view-container"></div>
   `;
