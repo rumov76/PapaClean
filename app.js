@@ -532,9 +532,6 @@ function renderHome(container) {
   if (!selected) {
     container.innerHTML = `
       <section class="card home-card">
-        <div class="home-actions">
-          <button class="btn primary" id="randomTaskBtn">Nouvelle tâche</button>
-        </div>
         <p class="helper-text">Aucune tâche trouvée.</p>
 
         <div class="home-footer">
@@ -551,10 +548,6 @@ function renderHome(container) {
 
     container.innerHTML = `
       <section class="card home-card">
-        <div class="home-actions">
-          <button class="btn primary" id="randomTaskBtn">Nouvelle tâche</button>
-        </div>
-
         <div class="task-highlight">
           <h2 class="task-title">${taskWithStatus.name}</h2>
           <p class="task-room">${taskWithStatus.room}</p>
@@ -575,10 +568,6 @@ function renderHome(container) {
             <button class="btn secondary" id="nextTaskBtn">Autre tâche</button>
           </div>
 
-          <p class="helper-text">
-            Le bouton "Nouvelle tâche" propose la tâche la plus en retard (ou la plus urgente).
-          </p>
-
           <div class="home-footer">
             <button class="btn link" id="backToPlanBtn">Retour à l'accueil</button>
           </div>
@@ -587,17 +576,9 @@ function renderHome(container) {
     `;
   }
 
-  const randomBtn = container.querySelector("#randomTaskBtn");
   const doneBtn = container.querySelector("#doneBtn");
   const nextTaskBtn = container.querySelector("#nextTaskBtn");
   const backToPlanBtn = container.querySelector("#backToPlanBtn");
-
-  if (randomBtn) {
-    randomBtn.addEventListener("click", () => {
-      selectNextTask();
-      render();
-    });
-  }
 
   if (doneBtn) {
     doneBtn.addEventListener("click", () => {
