@@ -147,6 +147,12 @@ body {
   justify-content: center;
 }
 
+.home-footer {
+  margin-top: 8px;
+  display: flex;
+  justify-content: center;
+}
+
 .btn {
   border: none;
   border-radius: 999px;

@@ -533,10 +533,13 @@ function renderHome(container) {
     container.innerHTML = `
       <section class="card home-card">
         <div class="home-actions">
-          <button class="btn primary" id="randomTaskBtn">Tâche aléatoire</button>
-          <button class="btn outline" id="planBtn">Plan appartement</button>
+          <button class="btn primary" id="randomTaskBtn">Nouvelle tâche</button>
         </div>
         <p class="helper-text">Aucune tâche trouvée.</p>
+
+        <div class="home-footer">
+          <button class="btn link" id="backToPlanBtn">Retour à l'accueil</button>
+        </div>
       </section>
     `;
   } else {
@@ -549,8 +552,7 @@ function renderHome(container) {
     container.innerHTML = `
       <section class="card home-card">
         <div class="home-actions">
-          <button class="btn primary" id="randomTaskBtn">Tâche aléatoire</button>
-          <button class="btn outline" id="planBtn">Plan appartement</button>
+          <button class="btn primary" id="randomTaskBtn">Nouvelle tâche</button>
         </div>
 
         <div class="task-highlight">
@@ -574,28 +576,26 @@ function renderHome(container) {
           </div>
 
           <p class="helper-text">
-            Le bouton "Tâche aléatoire" propose la tâche la plus en retard (ou la plus urgente).
+            Le bouton "Nouvelle tâche" propose la tâche la plus en retard (ou la plus urgente).
           </p>
+
+          <div class="home-footer">
+            <button class="btn link" id="backToPlanBtn">Retour à l'accueil</button>
+          </div>
         </div>
       </section>
     `;
   }
 
   const randomBtn = container.querySelector("#randomTaskBtn");
-  const planBtn = container.querySelector("#planBtn");
   const doneBtn = container.querySelector("#doneBtn");
   const nextTaskBtn = container.querySelector("#nextTaskBtn");
+  const backToPlanBtn = container.querySelector("#backToPlanBtn");
 
   if (randomBtn) {
     randomBtn.addEventListener("click", () => {
       selectNextTask();
       render();
-    });
-  }
-
-  if (planBtn) {
-    planBtn.addEventListener("click", () => {
-      setView("plan");
     });
   }
 
@@ -612,6 +612,12 @@ function renderHome(container) {
     nextTaskBtn.addEventListener("click", () => {
       selectNextTask();
       render();
+    });
+  }
+
+  if (backToPlanBtn) {
+    backToPlanBtn.addEventListener("click", () => {
+      setView("plan");
     });
   }
 }
@@ -700,7 +706,6 @@ function renderPlan(container) {
     <section class="card plan-layout">
       <div class="plan-header">
         <h2>Plan de l'appartement</h2>
-        <button class="btn link" id="backHomeBtn">Retour à l'accueil</button>
       </div>
       <div class="plan-grid">
         ${blocksHtml}
@@ -708,13 +713,6 @@ function renderPlan(container) {
       ${roomTasksHtml}
     </section>
   `;
-
-  const backBtn = container.querySelector("#backHomeBtn");
-  if (backBtn) {
-    backBtn.addEventListener("click", () => {
-      setView("home");
-    });
-  }
 
   const roomButtons = container.querySelectorAll(".plan-room");
   roomButtons.forEach((btn) => {
@@ -749,11 +747,7 @@ function render() {
         </div>
         <div class="hero-emoji" aria-hidden="true">🧽</div>
       </div>
-      <div class="hero-badges">
-        <span class="hero-badge">🔁 Routines par pièce</span>
-        <span class="hero-badge">⏱️ Petites tâches de 10–20 min</span>
-        <span class="hero-badge">✅ Toujours à jour</span>
-      </div>
+
     </section>
 
     <div class="tab-bar">
