@@ -308,7 +308,7 @@ const ROOM_LABELS = {
 };
 
 let state = {
-  view: "home",           // "home" | "plan"
+  view: "plan",           // "home" | "plan"
   tasks: [],
   selectedTaskId: null,
   selectedRoomCode: null
@@ -526,12 +526,11 @@ function markTaskDone(taskId) {
   render();
 }
 
-function renderHome() {
-  const root = document.getElementById("app-root");
+function renderHome(container) {
   const selected = getSelectedTask();
 
   if (!selected) {
-    root.innerHTML = `
+    container.innerHTML = `
       <section class="card home-card">
         <div class="home-actions">
           <button class="btn primary" id="randomTaskBtn">Tâche aléatoire</button>
@@ -547,7 +546,7 @@ function renderHome() {
       status: computeStatus(selected, today)
     };
 
-    root.innerHTML = `
+    container.innerHTML = `
       <section class="card home-card">
         <div class="home-actions">
           <button class="btn primary" id="randomTaskBtn">Tâche aléatoire</button>
@@ -582,15 +581,15 @@ function renderHome() {
     `;
   }
 
-  const randomBtn = document.getElementById("randomTaskBtn");
-  const planBtn = document.getElementById("planBtn");
-  const doneBtn = document.getElementById("doneBtn");
-  const nextTaskBtn = document.getElementById("nextTaskBtn");
+  const randomBtn = container.querySelector("#randomTaskBtn");
+  const planBtn = container.querySelector("#planBtn");
+  const doneBtn = container.querySelector("#doneBtn");
+  const nextTaskBtn = container.querySelector("#nextTaskBtn");
 
   if (randomBtn) {
     randomBtn.addEventListener("click", () => {
       selectNextTask();
-      renderHome();
+      render();
     });
   }
 
@@ -612,13 +611,12 @@ function renderHome() {
   if (nextTaskBtn) {
     nextTaskBtn.addEventListener("click", () => {
       selectNextTask();
-      renderHome();
+      render();
     });
   }
 }
 
-function renderPlan() {
-  const root = document.getElementById("app-root");
+function renderPlan(container) {
   const selectedRoom = state.selectedRoomCode;
 
   const roomOrder = ["Cp", "Cs", "Cn", "Sdb", "T", "Cu", "S", "H", "R", "B"];
@@ -698,7 +696,7 @@ function renderPlan() {
     `;
   }
 
-  root.innerHTML = `
+  container.innerHTML = `
     <section class="card plan-layout">
       <div class="plan-header">
         <h2>Plan de l'appartement</h2>
@@ -711,23 +709,23 @@ function renderPlan() {
     </section>
   `;
 
-  const backBtn = document.getElementById("backHomeBtn");
+  const backBtn = container.querySelector("#backHomeBtn");
   if (backBtn) {
     backBtn.addEventListener("click", () => {
       setView("home");
     });
   }
 
-  const roomButtons = root.querySelectorAll(".plan-room");
+  const roomButtons = container.querySelectorAll(".plan-room");
   roomButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       const code = btn.getAttribute("data-room-code");
       state.selectedRoomCode = code;
-      renderPlan();
+      render();
     });
   });
 
-  const doneButtons = root.querySelectorAll("[data-done-task-id]");
+  const doneButtons = container.querySelectorAll("[data-done-task-id]");
   doneButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       const id = btn.getAttribute("data-done-task-id");
@@ -737,10 +735,55 @@ function renderPlan() {
 }
 
 function render() {
-  if (state.view === "plan") {
-    renderPlan();
+  const root = document.getElementById("app-root");
+  const isPlan = state.view === "plan";
+
+  root.innerHTML = `
+    <section class="card hero-card">
+      <div class="hero-header">
+        <div class="hero-title-block">
+          <h2 class="hero-title">Ton plan ménage pour l'appart</h2>
+          <p class="hero-subtitle">
+            PapaClean t'aide à savoir quoi faire, où et quand, sans te prendre la tête.
+          </p>
+        </div>
+        <div class="hero-emoji" aria-hidden="true">🧽</div>
+      </div>
+      <div class="hero-badges">
+        <span class="hero-badge">🔁 Routines par pièce</span>
+        <span class="hero-badge">⏱️ Petites tâches de 10–20 min</span>
+        <span class="hero-badge">✅ Toujours à jour</span>
+      </div>
+    </section>
+
+    <div class="tab-bar">
+      <button class="tab ${isPlan ? "active" : ""}" id="tab-plan">Plan appartement</button>
+      <button class="tab ${!isPlan ? "active" : ""}" id="tab-random">Tâche aléatoire</button>
+    </div>
+
+    <div id="view-container"></div>
+  `;
+
+  const viewContainer = document.getElementById("view-container");
+  if (isPlan) {
+    renderPlan(viewContainer);
   } else {
-    renderHome();
+    renderHome(viewContainer);
+  }
+
+  const tabPlan = document.getElementById("tab-plan");
+  const tabRandom = document.getElementById("tab-random");
+
+  if (tabPlan) {
+    tabPlan.addEventListener("click", () => {
+      setView("plan");
+    });
+  }
+
+  if (tabRandom) {
+    tabRandom.addEventListener("click", () => {
+      setView("home");
+    });
   }
 }
 
